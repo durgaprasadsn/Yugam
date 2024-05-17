@@ -54,6 +54,7 @@ const Home = () => {
   const [validDay, setValidDay] = useState("");
   const [tshirtVar, setthsirtVar] = useState("");
   const [foodType, setFoodType] = useState("");
+  const [idType, setIdtype] = useState("")
  
   const handleOpen = () => setOpen(!open);
   const navigate = useNavigate()
@@ -231,6 +232,89 @@ const Home = () => {
         }
       } else {
           console.log("Data not found");
+          get(child(ref(db), "map/" + result)).then((snapshot) => {
+            if (snapshot.exists()) {
+                console.log("Snapshot in get " + snapshot.val());
+                performRegistrationOperation(snapshot.val(), day_today);
+            } else {
+                console.log("Data not found");
+                setNameFromDB("Data not Found");
+            }
+          });
+      }
+    });
+  }
+
+  // booking id if not found
+  // map booking id to registration id
+  function performRegistrationOperation(value, day_today) {
+    console.log(" Value " + value);
+    get(child(ref(db), "delegates/" + value)).then((snapshot) => {
+      if (snapshot.exists()) {
+        const dataFromDB = snapshot.val();
+        
+        console.log("Snapshot in get " + JSON.stringify(dataFromDB[day_today]) + " " + dataFromDB[day_today]['Checkedin']);
+        if (operationType === "Checkin") {
+          if (dataFromDB[day_today]['Checkedin'] === "No") {
+            setDid(value);
+            setNameFromDB(dataFromDB['name']);
+            setValid(true);
+            setRID(dataFromDB.district)
+          } else {
+            setNameFromDB(dataFromDB.name + " already checkedin");
+          }
+        }  else if (operationType === "Food") {
+          get(child(ref(db), "food/")).then((snapshot) => {
+            if (snapshot.exists()) {
+                const food_data = snapshot.val();
+                console.log("Snapshot in get " + JSON.stringify(food_data));
+                setFoodType(food_data.food_type)
+                if (dataFromDB[day_today][food_data.food_type] == 'No') {
+                  setNameFromDB(dataFromDB.name);
+                  setDid(value);
+                  setValid(true);
+                } else {
+                  setNameFromDB(dataFromDB.name + " - " + food_data.food_type + " is already served. ");
+                  setValid(false);
+                }
+            } else {
+                console.log("Data not found");
+                setNameFromDB("Data not Found");
+            }
+          });
+        } else if (operationType === "Logistics") {
+          // Logistics operation has to be performed
+          const logistics_data = {};
+          console.log(dataFromDB);
+          var tshirt_var = "T-Shirt (" + dataFromDB.tshirt + ")";
+          setthsirtVar(tshirt_var);
+          console.log("Check the shirt here " + tshirt_var);
+          let original = ["IDCard", "GenericKit", "Caricature", tshirt_var];
+          
+          for (let i = 0; i < original.length; i++) {
+            logistics_data[original[i]] = dataFromDB['logistics'][original[i]];
+            console.log(logistics_data[original[i]]);
+          }
+
+          setLogisticsList(original);
+          setNameFromDB(dataFromDB.name);
+          setidcard(dataFromDB['logistics'][original[0]] === "No" ? false : true);
+          setgenerickit(dataFromDB['logistics'][original[1]] === "No" ? false : true);
+          setcaricature(dataFromDB['logistics'][original[2]] === "No" ? false : true);
+          settshirt(dataFromDB['logistics'][original[3]] === "No" ? false : true);
+          setValid(true);
+          setDid(value);
+        } else if (operationType === "Room Details") {
+          setValid(true);
+          setNameFromDB(dataFromDB.name);
+          setRID(dataFromDB.district);
+          setDid(value);
+          setAcccomLocation(dataFromDB['room_details']['accomodationLocation']);
+          setAccomName(dataFromDB['room_details']['accomodationName']);
+          setRoomNo(dataFromDB['room_details']['roomNo']);
+        }
+      } else {
+          console.log("Data not found");
           setNameFromDB("Data not Found");
       }
     });
@@ -248,29 +332,43 @@ const Home = () => {
                 console.log("Snapshot in get " + snapshot.val() + type);
                 const day_today = snapshot.val();
                 setValidDay(day_today);
-                if (type == "typed") {
-                  console.log("TYpe " + result)
-                  performOperation(result, day_today);
-                  // get(child(ref(db), "map/" + result.text)).then((snapshot) => {
-                  //     if (snapshot.exists()) {
-                  //         console.log("Snapshot in get " + snapshot.val());
-                  //         return snapshot.val();
-                  //     } else {
-                  //         console.log("Data not found");
-                  //     }
-                  // });
-                } else {
-                  performOperation(result, day_today);
-                  // get(child(ref(db), "map/" + result)).then((snapshot) => {
-                  //   if (snapshot.exists()) {
-                  //       console.log("Snapshot in get " + snapshot.val());
-                  //       performOperation(snapshot.val(), day_today);
-                  //   } else {
-                  //       console.log("Data not found");
-                  //       setNameFromDB("Data not Found");
-                  //   }
-                  // });
-                }
+                performOperation(result, day_today);
+                // if (idType == "registrationId") {
+                  
+                // } else {
+                //   get(child(ref(db), "map/" + result)).then((snapshot) => {
+                //     if (snapshot.exists()) {
+                //         console.log("Snapshot in get " + snapshot.val());
+                //         performOperation(snapshot.val(), day_today);
+                //     } else {
+                //         console.log("Data not found");
+                //         setNameFromDB("Data not Found");
+                //     }
+                //   });
+                // }
+                // if (type == "typed") {
+                //   console.log("TYpe " + result)
+                //   performOperation(result, day_today);
+                //   // get(child(ref(db), "map/" + result.text)).then((snapshot) => {
+                //   //     if (snapshot.exists()) {
+                //   //         console.log("Snapshot in get " + snapshot.val());
+                //   //         return snapshot.val();
+                //   //     } else {
+                //   //         console.log("Data not found");
+                //   //     }
+                //   // });
+                // } else {
+                //   performOperation(result, day_today);
+                //   // get(child(ref(db), "map/" + result)).then((snapshot) => {
+                //   //   if (snapshot.exists()) {
+                //   //       console.log("Snapshot in get " + snapshot.val());
+                //   //       performOperation(snapshot.val(), day_today);
+                //   //   } else {
+                //   //       console.log("Data not found");
+                //   //       setNameFromDB("Data not Found");
+                //   //   }
+                //   // });
+                // }
             } else {
                 console.log("Data not found");
                 setNameFromDB("Data not Found");
@@ -471,12 +569,14 @@ const Home = () => {
         console.log("Data result " + res);
         let final_res = "";
         if (res.length == 8) {
+          setIdtype("registrationId")
           console.log("length is 8");
           final_res = res;
         } else {
           console.log("length is not 8");
           const arr = res.split("|");
           final_res = arr[0].split(":")[1];
+          setIdtype("bookingId");
         }
         
         console.log("Operation Type " + operationType + " result " + final_res);

@@ -909,7 +909,7 @@ const Home = () => {
           </Dialog>
         </>) : (<>
           <div className='flex items-center justify-center space-x-3 mt-40'>
-            <Button id="checkin" type="submit" variant="contained" className="mb-8" onClick={() => startScanning('Checkin')}>Checkin</Button>
+            {/* <Button id="checkin" type="submit" variant="contained" className="mb-8" onClick={() => startScanning('Checkin')}>Checkin</Button> */}
             <Button id="food" type="submit" variant="contained" className='mb-8' onClick={() => startScanning('Food')}>Food</Button>
             <Button id="logistics" type="submit" variant="contained" className='mb-8' onClick={() => startScanning('Logistics')}>Logistics</Button>
             {/* <Button id="room" type="submit" variant="contained" className='mb-8' onClick={() => startScanning('Room Details')}>Room Details</Button> */}

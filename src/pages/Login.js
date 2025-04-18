@@ -21,8 +21,8 @@ export default function LoginPage(){
              <>
              <Header
                     className="mx-auto my-4"
-                    heading="Login to your account Yugam"
-                    paragraph="Yugam Don't have an account yet? "
+                    heading="Login to your account Encanto"
+                    paragraph="Encanto Don't have an account yet? "
                     linkName="Signup"
                     linkUrl="/signup" />
             <Login />

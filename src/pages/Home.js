@@ -201,26 +201,33 @@ const Home = () => {
           // }
         } else if (operationType === "Logistics") {
           // Logistics operation has to be performed
-          const logistics_data = {};
-          console.log(dataFromDB);
-          var tshirt_var = "T-Shirt (" + dataFromDB.tshirt + ")";
-          setthsirtVar(tshirt_var);
-          console.log("Check the shirt here " + tshirt_var);
-          let original = ["IDCard", "GenericKit", "Caricature", tshirt_var];
           
-          for (let i = 0; i < original.length; i++) {
-            logistics_data[original[i]] = dataFromDB['logistics'][original[i]];
-            console.log(logistics_data[original[i]]);
+          if (dataFromDB.ticket_name == "Ignitio Encantum (Day 1 Pass)" || dataFromDB.ticket_name == "Revivio Magica (Day 2 Pass)" || dataFromDB.ticket_name == "Delegates - Without Kits" || dataFromDB.ticket_name == "MOJO Pass - Interactor Pass") {
+            console.log("Ticket Name" + dataFromDB.ticket_name)
+            setNameFromDB("Logistics will not be given")
+            setLogisticsList(null)
+          } else {
+            const logistics_data = {};
+            console.log(dataFromDB);
+            var tshirt_var = "T-Shirt (" + dataFromDB.tshirt + ")";
+            setthsirtVar(tshirt_var);
+            console.log("Check the shirt here " + tshirt_var);
+            let original = ["IDCard", "GenericKit", "Caricature", tshirt_var];
+            
+            for (let i = 0; i < original.length; i++) {
+              logistics_data[original[i]] = dataFromDB['logistics'][original[i]];
+              console.log(logistics_data[original[i]]);
+            }
+  
+            setLogisticsList(original);
+            setNameFromDB(dataFromDB.name);
+            setidcard(dataFromDB['logistics'][original[0]] === "No" ? false : true);
+            setgenerickit(dataFromDB['logistics'][original[1]] === "No" ? false : true);
+            setcaricature(dataFromDB['logistics'][original[2]] === "No" ? false : true);
+            settshirt(dataFromDB['logistics'][original[3]] === "No" ? false : true);
+            setValid(true);
+            setDid(value);
           }
-
-          setLogisticsList(original);
-          setNameFromDB(dataFromDB.name);
-          setidcard(dataFromDB['logistics'][original[0]] === "No" ? false : true);
-          setgenerickit(dataFromDB['logistics'][original[1]] === "No" ? false : true);
-          setcaricature(dataFromDB['logistics'][original[2]] === "No" ? false : true);
-          settshirt(dataFromDB['logistics'][original[3]] === "No" ? false : true);
-          setValid(true);
-          setDid(value);
         } else if (operationType === "Room Details") {
           setValid(true);
           setNameFromDB(dataFromDB.name);
@@ -909,7 +916,7 @@ const Home = () => {
           </Dialog>
         </>) : (<>
           <div className='flex items-center justify-center space-x-3 mt-40'>
-            {/* <Button id="checkin" type="submit" variant="contained" className="mb-8" onClick={() => startScanning('Checkin')}>Checkin</Button> */}
+            <Button id="checkin" type="submit" variant="contained" className="mb-8" onClick={() => startScanning('Checkin')}>Checkin</Button>
             <Button id="food" type="submit" variant="contained" className='mb-8' onClick={() => startScanning('Food')}>Food</Button>
             <Button id="logistics" type="submit" variant="contained" className='mb-8' onClick={() => startScanning('Logistics')}>Logistics</Button>
             {/* <Button id="room" type="submit" variant="contained" className='mb-8' onClick={() => startScanning('Room Details')}>Room Details</Button> */}
